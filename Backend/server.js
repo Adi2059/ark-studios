@@ -93,7 +93,8 @@ app.delete('/api/staff/:id', async (req, res) => {
 
 // ==========================================
 // ==========================================
-// 🛠️ 3. ASSIGN DUTY API (Port 587 Cloud Fix)
+// // ==========================================
+// 🛠️ 3. ASSIGN DUTY API (The IPv6 Final Fix)
 // ==========================================
 app.post('/api/bookings/:id/assign', async (req, res) => {
     try {
@@ -116,11 +117,11 @@ app.post('/api/bookings/:id/assign', async (req, res) => {
         const staffMember = await Staff.findById(staffId);
         
         if (staffMember) {
-            // 🔥 Cloud Server Fix: Using Port 587 (STARTTLS)
             const transporter = nodemailer.createTransport({
                 host: 'smtp.gmail.com',
                 port: 587,
-                secure: false, // 587 ke liye hamesha false hota hai
+                secure: false, 
+                family: 4, // 🚨 THE BOSS KILLER: Force IPv4, ignore IPv6!
                 auth: { 
                     user: process.env.EMAIL_USER, 
                     pass: process.env.EMAIL_PASS 
@@ -138,7 +139,7 @@ app.post('/api/bookings/:id/assign', async (req, res) => {
             };
             
             transporter.sendMail(mailOptions)
-                .then(() => console.log("📧 Email sent successfully in background! (Port 587)"))
+                .then(() => console.log("📧 Email sent successfully in background! (IPv4 Fix)"))
                 .catch((mailError) => console.log("❌ Background Mail Error:", mailError.message));
         }
 
