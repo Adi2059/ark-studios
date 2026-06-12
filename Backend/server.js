@@ -1,3 +1,8 @@
+// 🚨 THE NUCLEAR FIX: Force Node.js to use IPv4 globally
+const dns = require('dns');
+dns.setDefaultResultOrder('ipv4first');
+
+
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
