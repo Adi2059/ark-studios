@@ -92,7 +92,8 @@ app.delete('/api/staff/:id', async (req, res) => {
 });
 
 // ==========================================
-// 🛠️ 3. ASSIGN DUTY API (Timeout Fixed & Warning Removed)
+// ==========================================
+// 🛠️ 3. ASSIGN DUTY API (Port 587 Cloud Fix)
 // ==========================================
 app.post('/api/bookings/:id/assign', async (req, res) => {
     try {
@@ -106,7 +107,6 @@ app.post('/api/bookings/:id/assign', async (req, res) => {
             });
         }
 
-        // Fix 1: Mongoose Warning removed by using returnDocument: 'after'
         const updatedBooking = await Booking.findByIdAndUpdate(
             bookingId,
             { staffId: staffId, status: 'Assigned' },
@@ -116,17 +116,17 @@ app.post('/api/bookings/:id/assign', async (req, res) => {
         const staffMember = await Staff.findById(staffId);
         
         if (staffMember) {
-            // Fix 2: Explicit SMTP Setup to prevent Connection Timeout
+            // 🔥 Cloud Server Fix: Using Port 587 (STARTTLS)
             const transporter = nodemailer.createTransport({
                 host: 'smtp.gmail.com',
-                port: 465,
-                secure: true, // 465 port ke liye true
+                port: 587,
+                secure: false, // 587 ke liye hamesha false hota hai
                 auth: { 
                     user: process.env.EMAIL_USER, 
                     pass: process.env.EMAIL_PASS 
                 },
                 tls: {
-                    rejectUnauthorized: false // Free cloud servers pe certification issue bypass karne ke liye
+                    rejectUnauthorized: false
                 }
             });
 
@@ -138,7 +138,7 @@ app.post('/api/bookings/:id/assign', async (req, res) => {
             };
             
             transporter.sendMail(mailOptions)
-                .then(() => console.log("📧 Email sent successfully in background!"))
+                .then(() => console.log("📧 Email sent successfully in background! (Port 587)"))
                 .catch((mailError) => console.log("❌ Background Mail Error:", mailError.message));
         }
 
@@ -149,7 +149,6 @@ app.post('/api/bookings/:id/assign', async (req, res) => {
         return res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 });
-
 // Shutter Kholna
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
