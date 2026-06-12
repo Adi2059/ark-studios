@@ -12,9 +12,14 @@ const nodemailer = require('nodemailer');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware Setup
+// 🛡️ SECURITY GUARD VIP PASS (CORS SETUP) 🛡️
 app.use(cors({
-    origin: ['http://localhost:5173'], // Frontend ko permission
+    origin: [
+        'https://ark-studio-live.vercel.app', // ✅ Tera naya Vercel Live Link
+        'http://localhost:5173',              // ✅ Local Vite Frontend
+        'http://localhost:5000'
+    ],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], // Saare database actions allow kar diye
     credentials: true
 }));
 app.use(express.json());
@@ -57,11 +62,17 @@ app.get('/api/slots', (req, res) => {
 // 📝 CREATE NEW BOOKING (Client form)
 app.post('/api/bookings', async (req, res) => {
     try {
+        // Note: Frontend se form data is format mein aana chahiye!
         const { clientName, clientEmail, clientPhone, eventType, slotId } = req.body;
         const newBooking = await Booking.create({
             clientName, clientEmail, clientPhone, eventType, slotId, status: 'Pending'
         });
-        await Slot.findByIdAndUpdate(slotId, { isBooked: true });
+        
+        // Agar slotId bheji hai toh usko booked mark kar dega
+        if (slotId) {
+            await Slot.findByIdAndUpdate(slotId, { isBooked: true });
+        }
+        
         res.status(201).json({ success: true, message: "Slot successfully booked! 🎉", data: newBooking });
     } catch (error) {
         console.log("Booking Error:", error);
@@ -107,6 +118,10 @@ app.patch('/api/bookings/:id/assign', async (req, res) => {
         // 2. Staff ki details nikalna (Real email aur naam ke liye)
         const staffMember = await Staff.findById(staffId);
         
+        if (!staffMember) {
+            return res.status(404).json({ success: false, message: "Staff member not found!" });
+        }
+
         // 3. NODEMAILER EMAIL LOGIC
         const transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -121,7 +136,7 @@ app.patch('/api/bookings/:id/assign', async (req, res) => {
             from: process.env.EMAIL_USER, // Bhejne wala (ARK Studio)
             to: staffMember.email,        // ✅ Paane wala (Staff ki apni original id)
             subject: '🎥 ARK Studio: New Duty Assigned!',
-            text: `Hello ${staffMember.name},\n\nAapko ARK Studio ki taraf se ek nayi duty assign hui hai!\n\nClient: ${updatedBooking.clientName}\nEvent: ${updatedBooking.eventType}\nPhone: ${updatedBooking.clientPhone}\n\nPlease check your dashboard for time and location.`
+            text: `Hello ${staffMember.name},\n\nAapko ARK Studio ki taraf se ek nayi duty assign hui hai!\n\nClient: ${updatedBooking.clientName || 'N/A'}\nEvent: ${updatedBooking.eventType || 'N/A'}\nPhone: ${updatedBooking.clientPhone || 'N/A'}\n\nPlease check your dashboard for time and location.`
         };
 
         // Mail send karna
