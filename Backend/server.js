@@ -16,7 +16,22 @@ app.use(cors({
     credentials: true
 }));
 app.use(express.json());
+// ==========================================
+// 🗓️ SLOTS API (Calendar Matrix)
+// ==========================================
+app.get('/api/slots', (req, res) => {
+    // Dummy slots for UI
+    const dummySlots = [
+        { _id: "101", date: "2026-06-15", isBooked: false },
+        { _id: "102", date: "2026-06-16", isBooked: true },
+        { _id: "103", date: "2026-06-17", isBooked: false }
+    ];
+    res.json({ success: true, data: dummySlots });
+});
 
+app.put('/api/slots/:id', (req, res) => {
+    res.json({ success: true, message: "Slot updated" });
+});
 // 📦 DATABASE CONNECTION
 mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 5000, family: 4 })
 .then(() => console.log("📦 Database Connected Successfully! 🔥"))
@@ -83,13 +98,21 @@ app.delete('/api/staff/:id', async (req, res) => {
 });
 
 // ==========================================
-// 🛠️ 3. ASSIGN DUTY API (Safe Email System)
 // ==========================================
-
+// 🛠️ 3. ASSIGN DUTY API (Crash-Proof)
+// ==========================================
 app.post('/api/bookings/:id/assign', async (req, res) => {
     try {
         const bookingId = req.params.id; 
         const { staffId } = req.body;    
+
+        // 🚨 SAFETY CHECK: Agar dummy id 's1' hai ya empty hai
+        if (!staffId || staffId.length < 10) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Bhai dummy staff ko assign nahi kar sakte! Pehle naya Original Staff add karo." 
+            });
+        }
 
         const updatedBooking = await Booking.findByIdAndUpdate(
             bookingId,
@@ -101,6 +124,30 @@ app.post('/api/bookings/:id/assign', async (req, res) => {
         
         if (staffMember) {
             try {
+                const transporter = nodemailer.createTransport({
+                    service: 'gmail',
+                    auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
+                });
+
+                const mailOptions = {
+                    from: process.env.EMAIL_USER, 
+                    to: staffMember.email,        
+                    subject: '🎥 ARK Studio: New Duty Assigned!',
+                    text: `Hello ${staffMember.name},\n\nAapko nayi duty assign hui hai!\n\nClient: ${updatedBooking.name}\nDate: ${updatedBooking.date}\nPhone: ${updatedBooking.phone}\nNotes: ${updatedBooking.notes}\n\nARK Studio Admin Panel.`
+                };
+                
+                await transporter.sendMail(mailOptions);
+            } catch (mailError) {
+                console.log("Mail bhejte time error aya:", mailError.message);
+            }
+        }
+
+        res.status(200).json({ success: true, message: "Duty Assigned Successfully!", data: updatedBooking });
+    } catch (error) {
+        console.log("Assign Error:", error);
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
+    }
+});
                 // NODEMAILER EMAIL LOGIC
                 const transporter = nodemailer.createTransport({
                     service: 'gmail',
