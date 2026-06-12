@@ -43,7 +43,6 @@ mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 5000, family
 // 📝 1. BOOKINGS API
 // ==========================================
 
-// Create Booking (Client Vercel Se Karega)
 app.post('/api/bookings', async (req, res) => {
     try {
         const { name, phone, date, notes } = req.body;
@@ -54,7 +53,6 @@ app.post('/api/bookings', async (req, res) => {
     }
 });
 
-// Fetch All Bookings (Admin Panel Ke Liye)
 app.get('/api/bookings', async (req, res) => {
     try {
         const bookings = await Booking.find().sort({ createdAt: -1 }); 
@@ -68,7 +66,6 @@ app.get('/api/bookings', async (req, res) => {
 // 👥 2. STAFF MANAGEMENT API (ADD/REMOVE)
 // ==========================================
 
-// Get All Staff (Dropdown mein dikhane ke liye)
 app.get('/api/staff', async (req, res) => {
     try {
         const staff = await Staff.find();
@@ -78,7 +75,6 @@ app.get('/api/staff', async (req, res) => {
     }
 });
 
-// Add New Staff (Owner karega)
 app.post('/api/staff', async (req, res) => {
     try {
         const { name, phone, email } = req.body;
@@ -89,7 +85,6 @@ app.post('/api/staff', async (req, res) => {
     }
 });
 
-// Remove Staff (Owner karega)
 app.delete('/api/staff/:id', async (req, res) => {
     try {
         await Staff.findByIdAndDelete(req.params.id);
@@ -100,14 +95,13 @@ app.delete('/api/staff/:id', async (req, res) => {
 });
 
 // ==========================================
-// 🛠️ 3. ASSIGN DUTY API (Crash-Proof)
+// 🛠️ 3. ASSIGN DUTY API (Instant Response - No Hang)
 // ==========================================
 app.post('/api/bookings/:id/assign', async (req, res) => {
     try {
         const bookingId = req.params.id; 
         const { staffId } = req.body;    
 
-        // 🚨 SAFETY CHECK: Agar dummy id 's1' hai ya empty hai
         if (!staffId || staffId.length < 10) {
             return res.status(400).json({ 
                 success: false, 
@@ -124,32 +118,28 @@ app.post('/api/bookings/:id/assign', async (req, res) => {
         const staffMember = await Staff.findById(staffId);
         
         if (staffMember) {
-            try {
-                // NODEMAILER EMAIL LOGIC
-                const transporter = nodemailer.createTransport({
-                    service: 'gmail',
-                    auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
-                });
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
+            });
 
-                const mailOptions = {
-                    from: process.env.EMAIL_USER, 
-                    to: staffMember.email,        
-                    subject: '🎥 ARK Studio: New Duty Assigned!',
-                    text: `Hello ${staffMember.name},\n\nAapko nayi duty assign hui hai!\n\nClient: ${updatedBooking.name}\nDate: ${updatedBooking.date}\nPhone: ${updatedBooking.phone}\nNotes: ${updatedBooking.notes}\n\nARK Studio Admin Panel.`
-                };
-                
-                await transporter.sendMail(mailOptions);
-                console.log("Email sent successfully!");
-            } catch (mailError) {
-                // Email fail hua toh bhi error nahi phekenge, sirf console mein batayenge!
-                console.log("Mail bhejte time error aya, par staff assign ho gaya:", mailError.message);
-            }
+            const mailOptions = {
+                from: process.env.EMAIL_USER, 
+                to: staffMember.email,        
+                subject: '🎥 ARK Studio: New Duty Assigned!',
+                text: `Hello ${staffMember.name},\n\nAapko nayi duty assign hui hai!\n\nClient: ${updatedBooking.name}\nDate: ${updatedBooking.date}\nPhone: ${updatedBooking.phone}\nNotes: ${updatedBooking.notes}\n\nARK Studio Admin Panel.`
+            };
+            
+            transporter.sendMail(mailOptions)
+                .then(() => console.log("📧 Email sent successfully in background!"))
+                .catch((mailError) => console.log("❌ Background Mail Error:", mailError.message));
         }
 
-        res.status(200).json({ success: true, message: "Duty Assigned Successfully!", data: updatedBooking });
+        return res.status(200).json({ success: true, message: "Duty Assigned Successfully!", data: updatedBooking });
+
     } catch (error) {
         console.log("Assign Error:", error);
-        res.status(500).json({ success: false, message: "Server error", error: error.message });
+        return res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 });
 
