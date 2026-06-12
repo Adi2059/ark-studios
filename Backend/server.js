@@ -21,7 +21,6 @@ app.use(express.json());
 // 🗓️ SLOTS API (Calendar Matrix)
 // ==========================================
 app.get('/api/slots', (req, res) => {
-    // Dummy slots for UI
     const dummySlots = [
         { _id: "101", date: "2026-06-15", isBooked: false },
         { _id: "102", date: "2026-06-16", isBooked: true },
@@ -42,7 +41,6 @@ mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 5000, family
 // ==========================================
 // 📝 1. BOOKINGS API
 // ==========================================
-
 app.post('/api/bookings', async (req, res) => {
     try {
         const { name, phone, date, notes } = req.body;
@@ -65,7 +63,6 @@ app.get('/api/bookings', async (req, res) => {
 // ==========================================
 // 👥 2. STAFF MANAGEMENT API (ADD/REMOVE)
 // ==========================================
-
 app.get('/api/staff', async (req, res) => {
     try {
         const staff = await Staff.find();
@@ -95,7 +92,7 @@ app.delete('/api/staff/:id', async (req, res) => {
 });
 
 // ==========================================
-// 🛠️ 3. ASSIGN DUTY API (Instant Response - No Hang)
+// 🛠️ 3. ASSIGN DUTY API (Timeout Fixed & Warning Removed)
 // ==========================================
 app.post('/api/bookings/:id/assign', async (req, res) => {
     try {
@@ -109,25 +106,35 @@ app.post('/api/bookings/:id/assign', async (req, res) => {
             });
         }
 
+        // Fix 1: Mongoose Warning removed by using returnDocument: 'after'
         const updatedBooking = await Booking.findByIdAndUpdate(
             bookingId,
             { staffId: staffId, status: 'Assigned' },
-            { new: true } 
+            { returnDocument: 'after' } 
         );
 
         const staffMember = await Staff.findById(staffId);
         
         if (staffMember) {
+            // Fix 2: Explicit SMTP Setup to prevent Connection Timeout
             const transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
+                host: 'smtp.gmail.com',
+                port: 465,
+                secure: true, // 465 port ke liye true
+                auth: { 
+                    user: process.env.EMAIL_USER, 
+                    pass: process.env.EMAIL_PASS 
+                },
+                tls: {
+                    rejectUnauthorized: false // Free cloud servers pe certification issue bypass karne ke liye
+                }
             });
 
             const mailOptions = {
                 from: process.env.EMAIL_USER, 
                 to: staffMember.email,        
                 subject: '🎥 ARK Studio: New Duty Assigned!',
-                text: `Hello ${staffMember.name},\n\nAapko nayi duty assign hui hai!\n\nClient: ${updatedBooking.name}\nDate: ${updatedBooking.date}\nPhone: ${updatedBooking.phone}\nNotes: ${updatedBooking.notes}\n\nARK Studio Admin Panel.`
+                text: `Hello ${staffMember.name},\n\nAapko nayi duty assign hui hai!\n\nClient: ${updatedBooking.name}\nDate: ${updatedBooking.date}\nPhone: ${updatedBooking.phone}\nNotes: ${updatedBooking.notes}\n\nCheck your portal for more details.`
             };
             
             transporter.sendMail(mailOptions)
