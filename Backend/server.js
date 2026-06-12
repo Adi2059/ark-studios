@@ -16,6 +16,7 @@ app.use(cors({
     credentials: true
 }));
 app.use(express.json());
+
 // ==========================================
 // 🗓️ SLOTS API (Calendar Matrix)
 // ==========================================
@@ -32,6 +33,7 @@ app.get('/api/slots', (req, res) => {
 app.put('/api/slots/:id', (req, res) => {
     res.json({ success: true, message: "Slot updated" });
 });
+
 // 📦 DATABASE CONNECTION
 mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 5000, family: 4 })
 .then(() => console.log("📦 Database Connected Successfully! 🔥"))
@@ -98,7 +100,6 @@ app.delete('/api/staff/:id', async (req, res) => {
 });
 
 // ==========================================
-// ==========================================
 // 🛠️ 3. ASSIGN DUTY API (Crash-Proof)
 // ==========================================
 app.post('/api/bookings/:id/assign', async (req, res) => {
@@ -124,30 +125,6 @@ app.post('/api/bookings/:id/assign', async (req, res) => {
         
         if (staffMember) {
             try {
-                const transporter = nodemailer.createTransport({
-                    service: 'gmail',
-                    auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
-                });
-
-                const mailOptions = {
-                    from: process.env.EMAIL_USER, 
-                    to: staffMember.email,        
-                    subject: '🎥 ARK Studio: New Duty Assigned!',
-                    text: `Hello ${staffMember.name},\n\nAapko nayi duty assign hui hai!\n\nClient: ${updatedBooking.name}\nDate: ${updatedBooking.date}\nPhone: ${updatedBooking.phone}\nNotes: ${updatedBooking.notes}\n\nARK Studio Admin Panel.`
-                };
-                
-                await transporter.sendMail(mailOptions);
-            } catch (mailError) {
-                console.log("Mail bhejte time error aya:", mailError.message);
-            }
-        }
-
-        res.status(200).json({ success: true, message: "Duty Assigned Successfully!", data: updatedBooking });
-    } catch (error) {
-        console.log("Assign Error:", error);
-        res.status(500).json({ success: false, message: "Server error", error: error.message });
-    }
-});
                 // NODEMAILER EMAIL LOGIC
                 const transporter = nodemailer.createTransport({
                     service: 'gmail',
