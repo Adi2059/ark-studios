@@ -60,26 +60,70 @@ app.get('/api/slots', (req, res) => {
 });
 
 // 📝 CREATE NEW BOOKING (Client form)
+// 📝 1. CREATE NEW BOOKING (Client form Vercel se)
 app.post('/api/bookings', async (req, res) => {
     try {
-        // Note: Frontend se form data is format mein aana chahiye!
-        const { clientName, clientEmail, clientPhone, eventType, slotId } = req.body;
+        // Frontend exactly ye 4 naam bhej raha hai
+        const { name, phone, date, notes } = req.body;
+        
         const newBooking = await Booking.create({
-            clientName, clientEmail, clientPhone, eventType, slotId, status: 'Pending'
+            name, phone, date, notes, status: 'Pending'
         });
         
-        // Agar slotId bheji hai toh usko booked mark kar dega
-        if (slotId) {
-            await Slot.findByIdAndUpdate(slotId, { isBooked: true });
-        }
-        
-        res.status(201).json({ success: true, message: "Slot successfully booked! 🎉", data: newBooking });
+        res.status(201).json({ success: true, message: "Slot booked!", data: newBooking });
     } catch (error) {
         console.log("Booking Error:", error);
         res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 });
 
+// 🛡️ 2. ADMIN PANEL: Fetch All Bookings (Admin.jsx ye API call karta hai)
+app.get('/api/bookings', async (req, res) => {
+    try {
+        const bookings = await Booking.find().sort({ createdAt: -1 }); 
+        res.status(200).json({ success: true, bookings: bookings });
+    } catch (error) {
+        console.log("Admin Fetch Error:", error);
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
+    }
+});
+
+// 🛠️ 3. ADMIN PANEL: Staff Assign karna (Frontend POST bhej raha tha)
+app.post('/api/bookings/:id/assign', async (req, res) => {
+    try {
+        const bookingId = req.params.id; 
+        const { staffId } = req.body;    
+
+        const updatedBooking = await Booking.findByIdAndUpdate(
+            bookingId,
+            { staffId: staffId, status: 'Assigned' },
+            { new: true } 
+        );
+
+        const staffMember = await Staff.findById(staffId);
+        
+        if (staffMember) {
+            // NODEMAILER EMAIL LOGIC
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
+            });
+
+            const mailOptions = {
+                from: process.env.EMAIL_USER, 
+                to: staffMember.email,        
+                subject: '🎥 ARK Studio: New Duty Assigned!',
+                text: `Hello ${staffMember.name},\n\nAapko nayi duty assign hui hai!\n\nClient: ${updatedBooking.name}\nDate: ${updatedBooking.date}\nPhone: ${updatedBooking.phone}\nNotes: ${updatedBooking.notes}\n\nARK Studio Admin Panel.`
+            };
+            await transporter.sendMail(mailOptions);
+        }
+
+        res.status(200).json({ success: true, message: "Staff assigned!", data: updatedBooking });
+    } catch (error) {
+        console.log("Assign Error:", error);
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
+    }
+});
 // 🛡️ ADMIN PANEL: Saari bookings fetch karna
 app.get('/api/admin/bookings', async (req, res) => {
     try {
