@@ -8,14 +8,18 @@ const Staff = require('./models/Staff');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// 🛡️ VIP PASS (CORS SETUP)
-app.use(cors({
-    origin: ['https://ark-studio-live.vercel.app', 'http://localhost:5173'],
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], 
+const corsOptions = {
+    origin: [
+        'http://localhost:5173', // Local testing ke liye
+        'https://ark-studio-live.vercel.app', // Purana Vercel link
+        'https://thearkphotography.com', // Tera Naya Domain
+        'https://www.thearkphotography.com' // Naya Domain (www ke sath)
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
-}));
-app.use(express.json());
+};
 
+app.use(cors(corsOptions));
 // ==========================================
 // 🗓️ LIVE CALENDAR SLOTS DATABASE MODEL
 // ==========================================
