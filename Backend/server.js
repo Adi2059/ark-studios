@@ -17,19 +17,49 @@ app.use(cors({
 app.use(express.json());
 
 // ==========================================
-// 🗓️ SLOTS API (Calendar Matrix)
+// 🗓️ LIVE CALENDAR SLOTS DATABASE MODEL
 // ==========================================
-app.get('/api/slots', (req, res) => {
-    const dummySlots = [
-        { _id: "101", date: "2026-06-15", isBooked: false },
-        { _id: "102", date: "2026-06-16", isBooked: true },
-        { _id: "103", date: "2026-06-17", isBooked: false }
-    ];
-    res.json({ success: true, data: dummySlots });
+const slotSchema = new mongoose.Schema({
+    date: { type: String, required: true, unique: true }, // Format: YYYY-MM-DD
+    isBooked: { type: Boolean, default: false }
+});
+const Slot = mongoose.model('Slot', slotSchema);
+
+// 1. GET ALL SLOTS (Website par dikhane ke liye)
+app.get('/api/slots', async (req, res) => {
+    try {
+        // Aaj aur aage ki dates hi dikhayega
+        const today = new Date().toISOString().split('T')[0];
+        const slots = await Slot.find({ date: { $gte: today } }).sort({ date: 1 });
+        res.json({ success: true, data: slots });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
 });
 
-app.put('/api/slots/:id', (req, res) => {
-    res.json({ success: true, message: "Slot updated" });
+// 2. UPDATE SLOTS (Admin Panel se dates Book/Free karne ke liye)
+app.post('/api/slots/update', async (req, res) => {
+    try {
+        // dates ek array hoga jaise: ['2026-07-15', '2026-07-16']
+        const { dates, isBooked } = req.body; 
+        
+        if (!dates || dates.length === 0) {
+            return res.status(400).json({ success: false, message: "Bhai koi date toh select kar!" });
+        }
+
+        // Loop lagakar saari selected dates ko database mein update/create karna
+        for (let date of dates) {
+            await Slot.findOneAndUpdate(
+                { date: date }, 
+                { isBooked: isBooked }, 
+                { upsert: true, returnDocument: 'after' } // upsert: true matlab agar date nahi hai toh nayi bana dega
+            );
+        }
+        res.status(200).json({ success: true, message: "Calendar Slots Updated Successfully! 🔥" });
+    } catch (error) {
+        console.log("Slot Update Error:", error);
+        res.status(500).json({ success: false, error: error.message });
+    }
 });
 
 // 📦 DATABASE CONNECTION
