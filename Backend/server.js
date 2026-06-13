@@ -1,15 +1,9 @@
-// 🚨 THE NUCLEAR FIX: Force Node.js to use IPv4 globally
-const dns = require('dns');
-dns.setDefaultResultOrder('ipv4first');
-
-
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const Booking = require('./models/booking');
 const Staff = require('./models/Staff');
-const nodemailer = require('nodemailer'); 
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -97,9 +91,7 @@ app.delete('/api/staff/:id', async (req, res) => {
 });
 
 // ==========================================
-// ==========================================
-// // ==========================================
-// 🛠️ 3. ASSIGN DUTY API (The IPv6 Final Fix)
+// 🛠️ 3. ASSIGN DUTY API (Fast2SMS Integration)
 // ==========================================
 app.post('/api/bookings/:id/assign', async (req, res) => {
     try {
@@ -107,10 +99,7 @@ app.post('/api/bookings/:id/assign', async (req, res) => {
         const { staffId } = req.body;    
 
         if (!staffId || staffId.length < 10) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Bhai dummy staff ko assign nahi kar sakte! Pehle naya Original Staff add karo." 
-            });
+            return res.status(400).json({ success: false, message: "Bhai dummy staff ko assign nahi kar sakte! Pehle naya Original Staff add karo." });
         }
 
         const updatedBooking = await Booking.findByIdAndUpdate(
@@ -122,39 +111,35 @@ app.post('/api/bookings/:id/assign', async (req, res) => {
         const staffMember = await Staff.findById(staffId);
         
         if (staffMember) {
-            const transporter = nodemailer.createTransport({
-                host: 'smtp.gmail.com',
-                port: 587,
-                secure: false, 
-                family: 4, // 🚨 THE BOSS KILLER: Force IPv4, ignore IPv6!
-                auth: { 
-                    user: process.env.EMAIL_USER, 
-                    pass: process.env.EMAIL_PASS 
-                },
-                tls: {
-                    rejectUnauthorized: false
-                }
-            });
+            // 📱 FAST2SMS LOGIC
+            const smsMessage = `ARK Studio: Nayi Duty!\nClient: ${updatedBooking.name}\nDate: ${updatedBooking.date}\nPhone: ${updatedBooking.phone}\nNotes: ${updatedBooking.notes}`;
 
-            const mailOptions = {
-                from: process.env.EMAIL_USER, 
-                to: staffMember.email,        
-                subject: '🎥 ARK Studio: New Duty Assigned!',
-                text: `Hello ${staffMember.name},\n\nAapko nayi duty assign hui hai!\n\nClient: ${updatedBooking.name}\nDate: ${updatedBooking.date}\nPhone: ${updatedBooking.phone}\nNotes: ${updatedBooking.notes}\n\nCheck your portal for more details.`
-            };
-            
-            transporter.sendMail(mailOptions)
-                .then(() => console.log("📧 Email sent successfully in background! (IPv4 Fix)"))
-                .catch((mailError) => console.log("❌ Background Mail Error:", mailError.message));
+            fetch('https://www.fast2sms.com/dev/bulkV2', {
+                method: 'POST',
+                headers: {
+                    'authorization': process.env.SMS_API_KEY,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    route: 'q', 
+                    message: smsMessage,
+                    flash: 0,
+                    numbers: staffMember.phone 
+                })
+            })
+            .then(response => response.json())
+            .then(data => console.log("📱 SMS Server Response:", data))
+            .catch(err => console.log("❌ SMS Error:", err));
         }
 
-        return res.status(200).json({ success: true, message: "Duty Assigned Successfully!", data: updatedBooking });
+        return res.status(200).json({ success: true, message: "Duty Assigned & SMS Sent Successfully!", data: updatedBooking });
 
     } catch (error) {
         console.log("Assign Error:", error);
         return res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 });
+
 // Shutter Kholna
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
