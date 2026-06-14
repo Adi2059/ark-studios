@@ -59,7 +59,7 @@ app.post('/api/slots/update', async (req, res) => {
             await Slot.findOneAndUpdate(
                 { date: date }, 
                 { isBooked: isBooked }, 
-                { upsert: true, new: true } 
+                { upsert: true, returnDocument: 'after' }
             );
         }
         res.status(200).json({ success: true, message: "Calendar Slots Updated Successfully! 🔥" });
@@ -147,7 +147,7 @@ app.post('/api/bookings/:id/assign', async (req, res) => {
         const updatedBooking = await Booking.findByIdAndUpdate(
             bookingId,
             { staffId: staffId, status: 'Assigned' },
-            { new: true } 
+            { returnDocument: 'after' }
         );
 
         // 2. Fetch Staff Details
