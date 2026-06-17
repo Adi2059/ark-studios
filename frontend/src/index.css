@@ -1,0 +1,14 @@
+/* Ye V4 ka naya engine hai */
+@import "tailwindcss";
+
+/* Yahan hum apne custom ARK Studio colors define kar rahe hain */
+@theme {
+  --color-darkBg: #0a0a0a;
+  --color-matteDark: #171717;
+  --color-gold: #D4AF37;
+}
+
+/* Base styles set karna */
+body {
+  @apply bg-darkBg text-gray-200 antialiased;
+}
