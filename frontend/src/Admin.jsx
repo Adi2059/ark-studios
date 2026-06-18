@@ -25,7 +25,7 @@ export default function Admin() {
   // ─── LOGIN HANDLER ───
   const handleLogin = (e) => {
     e.preventDefault();
-    if (passwordInput === 'ravish@2026') { 
+    if (passwordInput === 'ravish@2026') {
       setIsAuthenticated(true);
     } else {
       alert('❌ Access Denied: Incorrect Password');
