@@ -19,6 +19,12 @@ export default function App() {
   const [showText, setShowText] = useState(false);
   const [fadeExit, setFadeExit] = useState(false);
 
+<<<<<<< HEAD
+=======
+  // ─── LOCAL STATE FOR LANDSCAPE LIGHTBOX MODAL (POPUP PLAYER) ───
+  const [activePopupVideo, setActivePopupVideo] = useState(null);
+
+>>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
   // Official Studio Core Configurations
   const studioDetails = {
     name: "ARK STUDIO PHOTOGRAPHY",
@@ -66,21 +72,55 @@ export default function App() {
     ],
     preWeddingShoot: [
       { src: "/assets/eng.jpg" },
+<<<<<<< HEAD
       { src: "/assets/eng1.jpg" },
       { src: "/assets/eng2.jpg" },
       { src: "/assets/eng3.jpg" }
     ],
+=======
+      { src: "/assets/pre2.jpg" }, 
+      { src: "/assets/pre3.jpg" }, 
+      { src: "/assets/eng3.jpg" }
+    ],
+    haldiMehendiShoot: [
+      { src: "/assets/mh1.jpg" },
+      { src: "/assets/mh2.jpg" },
+      { src: "/assets/mh3.jpg" },
+      { src: "/assets/mh4.jpg" },
+      { src: "/assets/mh5.jpg" },
+      { src: "/assets/mh6.jpg" },
+      { src: "/assets/mh7.jpg" }
+    ],
+    babyShoot: [
+      { src: "/assets/by1.jpg" },
+      { src: "/assets/by2.jpg" },
+      { src: "/assets/by3.jpg" },
+      { src: "/assets/by4.jpg" }
+    ],
+    cinematicVideos: [
+      { src: "/assets/vv1.webm", isVideo: true },
+      { src: "/assets/vv2.webm", isVideo: true }
+    ],
+>>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
     eventCoverup: [
       { src: "/assets/bir.jpg" },
       { src: "/assets/dr.jpg" },
       { src: "/assets/dr1.jpg" },
+<<<<<<< HEAD
       { src: "/assets/eng2.jpg"},
+=======
+      { src: "/assets/eng2.jpg"}
+>>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
     ],
     portraitShoot: [
       { src: "/assets/wed4.jpg" },
       { src: "/assets/wed6.jpg" },
       { src: "/assets/eng4.jpg" },
+<<<<<<< HEAD
       { src: "/assets/wed2.jpg" },
+=======
+      { src: "/assets/wed2.jpg" }
+>>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
     ]
   };
 
@@ -157,6 +197,7 @@ export default function App() {
 
   const triggerPdfDownload = (e) => {
     if (e) e.preventDefault();
+<<<<<<< HEAD
     const catalogData = `=======================================================\n               ARK STUDIO PHOTOGRAPHY\n          Premium Production Portfolio Catalog\n=======================================================\nSTUDIO CONTACT DIRECTORIES:\n-------------------------------------------------------\nDirector/Owner: ${studioDetails.ownerName}\nHotline Contact: +91 ${studioDetails.phone}\nStudio Headquarters: ${studioDetails.address}\nOfficial Inbox: ${studioDetails.email}\nOFFICIAL SERVICE INVESTMENT STRUCTURE:\n-------------------------------------------------------\n1. Wedding Photography            : INR 22,000\n2. Wedding Cinematography         : INR 35,000\n3. Pre-Wedding Shoot              : INR 15,000\n4. Birthday / Event Party Coverup : INR 4,000\n5. Portrait Shoot Portfolio       : INR 3,000\nAVAILABILITY LIFECYCLE WINDOW:\n-------------------------------------------------------\n* Current Status Notice: Our seasonal calendar windows are entirely empty and open for booking!\n=======================================================\n       ARK STUDIO © 2026 - ALL RIGHTS RESERVED\n=======================================================`;
     const blob = new Blob([catalogData], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -167,6 +208,14 @@ export default function App() {
     linkNode.click();
     document.body.removeChild(linkNode);
     URL.revokeObjectURL(url);
+=======
+    const linkNode = document.createElement('a');
+    linkNode.href = '/assets/arkfinalbou.pdf';
+    linkNode.download = 'arkfinalbou.pdf';
+    document.body.appendChild(linkNode);
+    linkNode.click();
+    document.body.removeChild(linkNode);
+>>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
   };
 
   const [inquiryData, setInquiryData] = useState({ name: '', phone: '', date: '', notes: '' });
@@ -236,7 +285,11 @@ export default function App() {
         nextStep = 'collect_phone';
       } else if (nextStep === 'collect_phone') {
         updatedState.phone = textPayload;
+<<<<<<< HEAD
         aiReply = "Noted safely! Aapka event kis targeted date (तारीख) ko scheduled hai?";
+=======
+        aiReply = "Noted safely! Aapka event kis targeted date (तारीkh) ko scheduled hai?";
+>>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
         nextStep = 'collect_date';
       } else if (nextStep === 'collect_date') {
         updatedState.date = textPayload;
@@ -293,6 +346,34 @@ export default function App() {
         .card-3d-wrapper:hover .card-glare { opacity: 1; }
       `}</style>
 
+<<<<<<< HEAD
+=======
+      {/* ─── FULL SCREEN CINEMATIC LANDSCAPE LIGHTBOX MODAL (16:9 FORMAT AS REQUESTED) ─── */}
+      {activePopupVideo && (
+        <div className="fixed inset-0 z-[4000] flex items-center justify-center bg-black/95 backdrop-blur-3xl transition-all duration-300 p-4">
+          <button 
+            onClick={() => setActivePopupVideo(null)} 
+            className="absolute top-6 right-6 text-white hover:text-amber-500 text-4xl font-light transition-colors z-50 w-12 h-12 flex items-center justify-center rounded-full bg-black/50 border border-white/10 shadow-2xl backdrop-blur-sm"
+            title="Close Video"
+          >
+            &times;
+          </button>
+          
+          {/* Landscape Wide Player Wrapper */}
+          <div className="relative max-w-5xl w-full aspect-[16/9] bg-black shadow-[0_0_80px_rgba(245,158,11,0.3)] border border-amber-500/40 overflow-hidden rounded-sm">
+            <video 
+              src={activePopupVideo} 
+              controls 
+              autoPlay 
+              loop
+              playsInline
+              className="w-full h-full object-cover bg-black"
+            />
+          </div>
+        </div>
+      )}
+
+>>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
       {/* ─── PACKAGE DETAILS POP-UP MODAL ─── */}
       {selectedPackage && (
         <div className="fixed inset-0 z-[3000] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl transition-all">
@@ -366,7 +447,11 @@ export default function App() {
         </div>
       )}
 
+<<<<<<< HEAD
       {/* ─── HEADER NAVBAR (NEW MOBILE MENU SYSTEM) ─── */}
+=======
+      {/* ─── HEADER NAVBAR ─── */}
+>>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
       <header className="fixed top-0 w-full z-40 backdrop-blur-2xl bg-[#020202]/80 border-b border-white/5 px-6 md:px-16 py-4 flex justify-between items-center transition-all">
         <div>
           <img src="/assets/ARK studios.png" alt="ARK Studios" className="h-12 w-auto object-contain filter drop-shadow-[0_2px_15px_rgba(245,158,11,0.3)]" />
@@ -423,6 +508,7 @@ export default function App() {
           <span className="inline-block text-[10px] font-bold uppercase tracking-[0.4em] text-amber-500 border border-amber-500/30 px-4 py-2 backdrop-blur-md">
             Matiyariya Kothi • Established Excellence
           </span>
+<<<<<<< HEAD
           <h1 className="font-classic text-5xl sm:text-7xl md:text-8xl font-black tracking-tight text-white leading-[1.05]">
             Framing <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-700 italic font-medium">Soulful Legacies.</span>
@@ -432,6 +518,17 @@ export default function App() {
           </p>
           
           <div className="pt-8 flex flex-wrap gap-5">
+=======
+          <h1 className="font-classic text-5xl sm:text-7xl md:text-8xl font-black tracking-tight text-white text-left leading-[1.05]">
+            Framing <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-700 italic font-medium">Soulful Legacies.</span>
+          </h1>
+          <p className="text-zinc-400 max-w-xl text-sm md:text-base font-light leading-relaxed tracking-wide text-left">
+            Premium custom wedding frameworks, automated pre-wedding cinematography tracking systems, and high-fidelity production architectures.
+          </p>
+          
+          <div className="pt-8 flex flex-wrap gap-5 justify-start">
+>>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
             <a href="#portfolio" className="px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] bg-white text-black hover:bg-amber-500 transition-all">Explore Work</a>
             <a href="#live-slots" className="px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] border border-white/20 text-white hover:border-amber-500 hover:text-amber-500 transition-all backdrop-blur-sm">🗓️ Check Slots</a>
           </div>
@@ -441,11 +538,16 @@ export default function App() {
       {/* ─── ABOUT DIRECTOR ─── */}
       <section id="about-director" className="max-w-7xl mx-auto px-6 md:px-8 py-32 border-t border-white/5 scroll-mt-20 font-modern">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+<<<<<<< HEAD
           <div className="space-y-6">
+=======
+          <div className="space-y-6 text-left">
+>>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
             <div className="flex items-center gap-3">
               <span className="text-xs font-modern text-amber-500 tracking-[0.3em] uppercase">// Studio Leadership</span>
               <div className="h-[1px] bg-white/10 flex-1"></div>
             </div>
+<<<<<<< HEAD
             <h2 className="font-classic text-4xl md:text-6xl font-black text-white uppercase tracking-wider">Meet The <span className="text-amber-500 italic">Director</span></h2>
             <div className="space-y-1">
               <h3 className="text-2xl font-bold text-white">{studioDetails.ownerName}</h3>
@@ -455,6 +557,17 @@ export default function App() {
               Managing heavy cinema architectures and autonomous flight operations at Main Market, Matiyariya Kothi. Delivering premium resolution masterframes across East Champaran with standard hardware setups.
             </p>
             <div className="pt-4">
+=======
+            <h2 className="font-classic text-4xl md:text-6xl font-black text-white uppercase tracking-wider text-left">Meet The <span className="text-amber-500 italic">Director</span></h2>
+            <div className="space-y-1">
+              <h3 className="text-2xl font-bold text-white text-left">{studioDetails.ownerName}</h3>
+              <p className="text-zinc-500 text-xs tracking-wider uppercase text-left">Lead Photographer & Cinematographer</p>
+            </div>
+            <p className="text-zinc-400 text-sm leading-relaxed font-light text-left">
+              Managing heavy cinema architectures and autonomous flight operations at Main Market, Matiyariya Kothi. Delivering premium resolution masterframes across East Champaran with standard hardware setups.
+            </p>
+            <div className="pt-4 text-left">
+>>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
               <a href={`tel:${studioDetails.phone}`} className="inline-flex items-center gap-3 text-xs uppercase tracking-widest border border-white/20 rounded-sm px-6 py-3 text-zinc-300 hover:border-amber-500 hover:text-amber-500 transition-all">
                 <span>📞 Connect:</span> +91 {studioDetails.phone}
               </a>
@@ -467,6 +580,7 @@ export default function App() {
         </div>
       </section>
 
+<<<<<<< HEAD
       {/* ─── 3D PORTFOLIO GRID ─── */}
       <section id="portfolio" className="max-w-7xl mx-auto px-4 md:px-8 py-32 border-t border-white/5 scroll-mt-20 font-modern">
         <div className="mb-20 text-center">
@@ -501,6 +615,103 @@ export default function App() {
       </section>
 
       {/* ─── 3D FLOATING RATES CARD SECTION ─── */}
+=======
+      {/* ─── PORTFOLIO GRID ─── */}
+      <section id="portfolio" className="max-w-7xl mx-auto px-4 md:px-8 py-32 border-t border-white/5 scroll-mt-20 font-modern">
+        <div className="mb-20 text-center">
+          <h2 className="font-classic text-4xl md:text-6xl font-bold text-white uppercase tracking-widest">Cinematic <span className="text-amber-500 italic">Portfolio</span></h2>
+          <p className="text-zinc-500 text-sm mt-4 tracking-widest uppercase font-light">Explore premium media assets</p>
+        </div>
+
+        {Object.entries(portfolioPhotos).map(([category, photos]) => {
+          let sectionHeading = "";
+          if (category === 'weddingShoot') sectionHeading = "01 // Wedding Sessions";
+          else if (category === 'preWeddingShoot') sectionHeading = "02 // Pre-Wedding Shoot";
+          else if (category === 'haldiMehendiShoot') sectionHeading = "03 // Haldi & Mehendi Rituals";
+          else if (category === 'babyShoot') sectionHeading = "04 // Adorable Baby Shoot";
+          else if (category === 'cinematicVideos') sectionHeading = "05 // Elite Landscape Masterframes & Reels";
+          else if (category === 'eventCoverup') sectionHeading = "06 // Event Coverups";
+          else if (category === 'portraitShoot') sectionHeading = "07 // Elite Portraits";
+
+          const isVideoSection = category === 'cinematicVideos';
+
+          return (
+            <div key={category} className="mb-28">
+              <div className="flex items-center gap-6 mb-12">
+                <h3 className="text-xs font-black tracking-[0.3em] text-amber-500 uppercase text-left">
+                   {sectionHeading}
+                </h3>
+                <div className="h-[1px] bg-white/10 flex-1"></div>
+              </div>
+              
+              {/* 16:9 WIDE CINEMATIC LANDSCAPE GRID ARCHITECTURE AS REQUESTED */}
+              <div className={`grid ${isVideoSection ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8'} perspective-canvas`}>
+                {photos.map((photo, i) => {
+                  return (
+                    <div 
+                      key={i} 
+                      onClick={() => isVideoSection && setActivePopupVideo(photo.src)}
+                      className={
+                        isVideoSection 
+                          ? 'relative rounded-sm overflow-hidden bg-black border border-white/10 aspect-[16/9] w-full cursor-pointer group shadow-[0_20px_40px_rgba(0,0,0,0.9)] transition-all duration-500 hover:-translate-y-2 hover:border-amber-500/50 hover:shadow-[0_25px_60px_rgba(245,158,11,0.25)]'
+                          : 'card-3d-wrapper relative rounded-sm overflow-hidden bg-[#0a0a0a] border border-white/10 aspect-[4/5] cursor-crosshair group'
+                      }
+                    >
+                      {isVideoSection ? (
+                        /* PERFECT 16:9 LANDSCAPE CARD WITH LANDSCAPE VIDEO PREVIEW */
+                        <div className="w-full h-full relative overflow-hidden aspect-[16/9]">
+                          <video 
+                            src={photo.src} 
+                            muted 
+                            autoPlay 
+                            loop 
+                            playsInline 
+                            className="w-full h-full object-cover transition-transform duration-700 filter brightness-[0.8] group-hover:brightness-100 group-hover:scale-105" 
+                          />
+                          
+                          {/* Dark Cinematic Gradient Shading */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-black/30 pointer-events-none" />
+                          
+                          <div className="absolute top-4 left-4 bg-amber-500 text-black border border-amber-600 px-2 py-0.5 text-[8px] font-black tracking-[0.15em] uppercase font-modern rounded-xs">
+                            CINEMATIC WIDE
+                          </div>
+
+                          <div className="absolute bottom-4 left-5 right-5 flex justify-between items-end z-10 pointer-events-none">
+                            <div className="text-left">
+                              <span className="text-[9px] uppercase tracking-widest text-amber-500 block mb-0.5 font-bold">16:9 Ultra HD</span>
+                              <h4 className="font-classic text-base text-white font-bold tracking-wide">Master Session Cut #{i+1}</h4>
+                            </div>
+                            
+                            {/* Tap To Play Icon Frame */}
+                            <div className="flex items-center gap-1.5 text-zinc-400 text-[9px] tracking-widest font-bold bg-black/60 px-2 py-1 border border-white/5 backdrop-blur-sm">
+                              <svg className="w-3 h-3 text-amber-500 animate-pulse" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+                              <span>PLAY VIDEO</span>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        /* Standard Photo Framing Asset */
+                        <>
+                          <div className="card-glare"></div>
+                          <img src={photo.src} alt="ARK Capture" loading="lazy" className="card-img-3d w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-50 group-hover:opacity-80 transition-opacity duration-500" />
+                          <div className="card-content-3d absolute bottom-6 left-6 right-6 text-left">
+                             <span className="text-amber-400 text-[9px] tracking-[0.3em] uppercase block mb-1 font-bold text-left">Premium Asset</span>
+                             <span className="text-white font-classic text-xl italic tracking-wide text-left">ARK Original</span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </section>
+
+      {/* ─── RATES CARD SECTION ─── */}
+>>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
       <section id="rates-card" className="max-w-7xl mx-auto px-4 md:px-8 py-32 border-t border-white/5 scroll-mt-20 font-modern bg-[#020202] perspective-canvas overflow-hidden">
         <div className="mb-20 text-center">
           <h2 className="font-classic text-3xl md:text-5xl font-bold tracking-widest text-white uppercase">Investment <span className="text-amber-500 italic">Tiers</span></h2>
@@ -513,6 +724,7 @@ export default function App() {
             <div 
               key={idx} 
               onClick={() => setSelectedPackage(pkg)}
+<<<<<<< HEAD
               className="rate-card-3d bg-[#080808] border border-white/10 p-8 flex flex-col justify-between cursor-pointer"
               style={{ animationDelay: `${idx * 1.2}s` }} 
             >
@@ -523,6 +735,18 @@ export default function App() {
                 </div>
                 <div className="w-12 h-[1px] bg-amber-500 transition-all duration-500"></div>
                 <p className="text-zinc-500 text-xs font-light leading-relaxed line-clamp-3">{pkg.desc}</p>
+=======
+              className="rate-card-3d bg-[#080808] border border-white/10 p-8 flex flex-col justify-between cursor-pointer text-left"
+              style={{ animationDelay: `${idx * 1.2}s` }} 
+            >
+              <div className="space-y-6 text-left">
+                <div className="flex justify-between items-start">
+                  <h3 className="font-classic text-2xl font-bold text-white tracking-wider max-w-[70%] leading-tight text-left">{pkg.title}</h3>
+                  <span className="text-[10px] text-amber-500 border border-amber-500/30 px-2 py-1 uppercase tracking-widest font-bold bg-amber-500/5">View</span>
+                </div>
+                <div className="w-12 h-[1px] bg-amber-500 transition-all duration-500"></div>
+                <p className="text-zinc-500 text-xs font-light leading-relaxed line-clamp-3 text-left">{pkg.desc}</p>
+>>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
               </div>
               <div className="mt-12 flex justify-between items-end border-t border-white/5 pt-6">
                 <span className="text-amber-500 font-classic text-3xl font-bold tracking-wider">₹{pkg.price}</span>
@@ -542,6 +766,7 @@ export default function App() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 transition-all duration-500 mt-4">
             {testimonials.slice(reviewGroupIndex * 3, (reviewGroupIndex * 3) + 3).map((t, idx) => (
+<<<<<<< HEAD
               <div key={idx} className="p-8 bg-[#0a0a0a] border border-white/5 flex flex-col justify-between shadow-2xl hover:border-amber-500/30 transition-colors">
                 <div>
                   <div className="text-amber-500 text-sm mb-4 tracking-widest">★★★★★</div>
@@ -551,6 +776,17 @@ export default function App() {
                   <div>
                     <span className="text-white font-bold block uppercase tracking-widest text-xs">{t.name}</span>
                     <span className="text-amber-500 text-[10px] uppercase tracking-widest block mt-1">{t.role}</span>
+=======
+              <div key={idx} className="p-8 bg-[#0a0a0a] border border-white/5 flex flex-col justify-between shadow-2xl hover:border-amber-500/30 transition-colors text-left">
+                <div className="text-left">
+                  <div className="text-amber-500 text-sm mb-4 tracking-widest text-left">★★★★★</div>
+                  <p className="text-zinc-400 text-sm leading-relaxed font-classic italic text-left">"{t.text}"</p>
+                </div>
+                <div className="pt-6 mt-6 border-t border-white/5 flex justify-between items-center text-left">
+                  <div className="text-left">
+                    <span className="text-white font-bold block uppercase tracking-widest text-xs text-left">{t.name}</span>
+                    <span className="text-amber-500 text-[10px] uppercase tracking-widest block mt-1 text-left">{t.role}</span>
+>>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
                   </div>
                 </div>
               </div>
@@ -602,7 +838,11 @@ export default function App() {
           <div className="flex-1 p-8 overflow-y-auto space-y-6 text-sm max-h-[400px]">
             {messages.map((m, idx) => (
               <div key={idx} className={`flex ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+<<<<<<< HEAD
                 <div className={`p-4 max-w-[85%] leading-relaxed ${m.sender === 'user' ? 'bg-amber-500 text-black font-semibold' : 'bg-[#0a0a0a] text-zinc-300 border border-white/10'}`}>{m.text}</div>
+=======
+                <div className={`p-4 max-w-[85%] leading-relaxed text-left ${m.sender === 'user' ? 'bg-amber-500 text-black font-semibold' : 'bg-[#0a0a0a] text-zinc-300 border border-white/10'}`}>{m.text}</div>
+>>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
               </div>
             ))}
           </div>
@@ -613,20 +853,32 @@ export default function App() {
         </div>
       </section>
 
+<<<<<<< HEAD
       {/* ─── PREMIUM CINEMATIC FOOTER ─── */}
+=======
+      {/* ─── FOOTER ─── */}
+>>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
       <footer className="relative bg-[#020202] border-t border-white/5 pt-32 pb-12 overflow-hidden font-modern">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[18vw] font-classic font-black text-white/[0.02] whitespace-nowrap pointer-events-none select-none z-0 tracking-tighter">
           ARK STUDIO
         </div>
 
+<<<<<<< HEAD
         <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-16 grid grid-cols-1 md:grid-cols-4 gap-16 text-sm">
           <div className="space-y-6 col-span-1 md:col-span-2">
             <img src="/assets/ARK studios.png" alt="ARK Logo" className="h-16 w-auto opacity-100 filter drop-shadow-[0_2px_15px_rgba(245,158,11,0.2)]" />
             <p className="text-zinc-500 max-w-sm font-light leading-loose pt-2">
+=======
+        <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-16 grid grid-cols-1 md:grid-cols-4 gap-16 text-sm text-left">
+          <div className="space-y-6 col-span-1 md:col-span-2 text-left">
+            <img src="/assets/ARK studios.png" alt="ARK Logo" className="h-16 w-auto opacity-100 filter drop-shadow-[0_2px_15px_rgba(245,158,11,0.2)] text-left" />
+            <p className="text-zinc-500 max-w-sm font-light leading-loose pt-2 text-left">
+>>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
               Setting the gold standard in wedding cinematography and premium photography frameworks across East Champaran. 
             </p>
           </div>
 
+<<<<<<< HEAD
           <div className="space-y-6">
             <h4 className="text-white font-bold uppercase text-[10px] tracking-[0.3em]">// Headquarter</h4>
             <p className="text-zinc-400 font-light leading-loose">{studioDetails.address}</p>
@@ -642,10 +894,28 @@ export default function App() {
               <a href={studioDetails.fbLink} className="text-zinc-400 hover:text-amber-500 text-xs tracking-[0.2em] uppercase transition-colors">Instagram</a>
               <a href={studioDetails.fbLink} className="text-zinc-400 hover:text-amber-500 text-xs tracking-[0.2em] uppercase transition-colors">Facebook</a>
               <a href={studioDetails.ytChannel} className="text-zinc-400 hover:text-amber-500 text-xs tracking-[0.2em] uppercase transition-colors">YouTube</a>
+=======
+          <div className="space-y-6 text-left">
+            <h4 className="text-white font-bold uppercase text-[10px] tracking-[0.3em] text-left">// Headquarter</h4>
+            <p className="text-zinc-400 font-light leading-loose text-left">{studioDetails.address}</p>
+            <div className="space-y-2 pt-2 text-left">
+              <p className="text-zinc-400 text-left">T: <a href={`tel:${studioDetails.phone}`} className="text-white hover:text-amber-500 transition-colors">+91 {studioDetails.phone}</a></p>
+              <p className="text-zinc-400 text-left">E: <a href={`mailto:${studioDetails.email}`} className="text-white hover:text-amber-500 transition-colors">{studioDetails.email}</a></p>
+            </div>
+          </div>
+
+          <div className="space-y-6 text-left">
+            <h4 className="text-white font-bold uppercase text-[10px] tracking-[0.3em] text-left">// Social</h4>
+            <div className="flex flex-col gap-4 text-left">
+              <a href="https://www.instagram.com/arkravish?igsh=Zmg2bmo3NG10OHNn" target="_blank" rel="noreferrer" className="text-zinc-400 hover:text-amber-500 text-xs tracking-[0.2em] uppercase transition-colors text-left">Instagram</a>
+              <a href={studioDetails.fbLink} target="_blank" rel="noreferrer" className="text-zinc-400 hover:text-amber-500 text-xs tracking-[0.2em] uppercase transition-colors text-left">Facebook</a>
+              <a href={studioDetails.ytChannel} target="_blank" rel="noreferrer" className="text-zinc-400 hover:text-amber-500 text-xs tracking-[0.2em] uppercase transition-colors text-left">YouTube</a>
+>>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
             </div>
           </div>
         </div>
 
+<<<<<<< HEAD
         {/* NEW FOOTER BOTTOM WITH SECRET ADMIN BUTTON */}
         <div className="relative z-10 max-w-7xl mx-auto mt-24 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] text-zinc-600 tracking-widest uppercase">
           <p>© 2026 ARK STUDIO PRODUCTION.</p>
@@ -661,6 +931,21 @@ export default function App() {
   ⚙️ Admin Node
 </button>
             <p>Designed & Engineered by ScaleBoot</p>
+=======
+        <div className="relative z-10 max-w-7xl mx-auto mt-24 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] text-zinc-600 tracking-widest uppercase">
+          <p>© 2026 ARK STUDIO PRODUCTION.</p>
+          <div className="flex items-center gap-6 flex-wrap justify-center">
+            <button 
+              onClick={() => {
+                window.location.hash = 'admin';
+                window.location.reload();
+              }} 
+              className="hover:text-amber-500 transition-colors border border-zinc-800 px-4 py-2 rounded-sm bg-black/50 backdrop-blur-md cursor-pointer"
+            >
+              ⚙️ Admin Node
+            </button>
+            <p>Designed & Engineered by AfterUs Global</p>
+>>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
           </div>
         </div>
       </footer>
