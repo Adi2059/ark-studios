@@ -10,10 +10,8 @@ const Staff = require('./models/Staff');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ==========================================
-// 🛡️ SECURITY & BODY PARSER (Yahi miss tha!)
-// ==========================================
-app.use(express.json()); // ISKE BINA DATA UNDEFINED AATA HAI!
+// 🛡️ SECURITY & BODY PARSER
+app.use(express.json());
 
 const corsOptions = {
     origin: [
@@ -27,10 +25,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-
-// ==========================================
 // 🗓️ LIVE CALENDAR SLOTS DATABASE MODEL
-// ==========================================
 const slotSchema = new mongoose.Schema({
     date: { type: String, required: true, unique: true }, 
     isBooked: { type: Boolean, default: false }
@@ -70,20 +65,15 @@ app.post('/api/slots/update', async (req, res) => {
 });
 
 // 📦 DATABASE CONNECTION
-mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 5000, family: 4 })
+mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 15000, family: 4 })
 .then(() => console.log("📦 Database Connected Successfully! 🔥"))
 .catch((err) => console.log("❌ DB Error:", err.message));
 
-// ==========================================
-// 📝 1. BOOKINGS API (ONLY DATABASE SAVE, NO SMS HERE)
-// ==========================================
+// 📝 1. BOOKINGS API
 app.post('/api/bookings', async (req, res) => {
     try {
         const { name, phone, date, notes } = req.body;
-        
-        // Data aate hi direct save, koi dusra jhanjhat nahi!
         const newBooking = await Booking.create({ name, phone, date, notes, status: 'Pending' });
-        
         res.status(201).json({ success: true, message: "Slot booked!", data: newBooking });
     } catch (error) {
         console.log("Booking Submit Error:", error);
@@ -91,21 +81,25 @@ app.post('/api/bookings', async (req, res) => {
     }
 });
 
+// ✅ UPDATED: Added Pagination to prevent Memory Crash
 app.get('/api/bookings', async (req, res) => {
     try {
-        const bookings = await Booking.find().sort({ createdAt: -1 }); 
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20; // Sirf 20 records ek baar mein
+        const bookings = await Booking.find()
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * limit)
+            .limit(limit); 
         res.status(200).json({ success: true, bookings });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
 });
 
-// ==========================================
-// 👥 2. STAFF MANAGEMENT API (ADD/REMOVE)
-// ==========================================
+// 👥 2. STAFF MANAGEMENT API
 app.get('/api/staff', async (req, res) => {
     try {
-        const staff = await Staff.find();
+        const staff = await Staff.find().limit(50);
         res.status(200).json({ success: true, data: staff });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -131,66 +125,41 @@ app.delete('/api/staff/:id', async (req, res) => {
     }
 });
 
-// ==========================================
-// 🛠️ 3. ASSIGN DUTY API (ONLY THIS WILL SEND SMS)
-// ==========================================
+// 🛠️ 3. ASSIGN DUTY API
 app.post('/api/bookings/:id/assign', async (req, res) => {
     try {
         const bookingId = req.params.id; 
         const { staffId } = req.body;    
 
-        if (!staffId || staffId.length < 10) {
-            return res.status(400).json({ success: false, message: "Bhai dummy staff ko assign nahi kar sakte! Pehle naya Original Staff add karo." });
-        }
-
-        // 1. Update Booking Status
         const updatedBooking = await Booking.findByIdAndUpdate(
             bookingId,
             { staffId: staffId, status: 'Assigned' },
             { returnDocument: 'after' }
         );
 
-        // 2. Fetch Staff Details
         const staffMember = await Staff.findById(staffId);
         
-        // 3. Send SMS if Staff exists
         if (staffMember) {
             const dateObj = new Date(updatedBooking.date);
             const cleanDate = `${dateObj.getDate()}-${dateObj.getMonth()+1}-${dateObj.getFullYear()}`;
-            
-            const smsMessage = `ARK Studio: Nayi Duty!\nClient: ${updatedBooking.name}\nDate: ${cleanDate}\nPhone: ${updatedBooking.phone}\nNotes: ${updatedBooking.notes || 'None'}`;
+            const smsMessage = `ARK Studio: Nayi Duty!\nClient: ${updatedBooking.name}\nDate: ${cleanDate}\nPhone: ${updatedBooking.phone}`;
 
-            // Try-Catch for SMS so server doesn't crash if Fast2SMS is down
             try {
-                const response = await fetch('https://www.fast2sms.com/dev/bulkV2', {
+                await fetch('https://www.fast2sms.com/dev/bulkV2', {
                     method: 'POST',
-                    headers: {
-                        'authorization': process.env.SMS_API_KEY, // Make sure 'SMS_API_KEY' is exactly same in Render!
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        route: 'q', 
-                        message: smsMessage,
-                        flash: 0,
-                        numbers: staffMember.phone 
-                    })
+                    headers: { 'authorization': process.env.SMS_API_KEY, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ route: 'q', message: smsMessage, flash: 0, numbers: staffMember.phone })
                 });
-                const smsData = await response.json();
-                console.log("📱 SMS Delivered:", smsData);
             } catch (smsError) {
-                console.log("❌ SMS Error (but duty assigned):", smsError.message);
+                console.log("❌ SMS Error:", smsError.message);
             }
         }
-
-        return res.status(200).json({ success: true, message: "Duty Assigned & SMS Sent Successfully!", data: updatedBooking });
-
+        return res.status(200).json({ success: true, message: "Duty Assigned!", data: updatedBooking });
     } catch (error) {
-        console.log("Assign Error:", error);
         return res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 });
 
-// Shutter Kholna
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
 });
