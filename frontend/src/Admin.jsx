@@ -25,21 +25,14 @@ export default function Admin() {
   // ─── LOGIN HANDLER ───
   const handleLogin = (e) => {
     e.preventDefault();
-<<<<<<< HEAD
+
     if (passwordInput === 'ravish@2026') {
-=======
-    if (passwordInput === 'ravish@2026') { 
->>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
       setIsAuthenticated(true);
     } else {
       alert('❌ Access Denied: Incorrect Password');
     }
   };
 
-<<<<<<< HEAD
-  // ─── FETCH DATA ───
-=======
->>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
   // ─── FETCH DATA (WITH 24-HOUR AUTO HIDE LOGIC) ───
   const fetchBookings = () => {
     fetch(`${API_URL}/bookings`)
@@ -51,17 +44,6 @@ export default function Admin() {
           // Filter: Jo Assigned ho gayi hain aur 24 ghante purani hain, unhe hata do
           const activeBookings = data.bookings.filter(b => {
             if (b.status === 'Assigned') {
-<<<<<<< HEAD
-              // Backend ke update time se check karo, agar wo nahi hai toh date se check karo
-              const lastUpdated = b.updatedAt ? new Date(b.updatedAt) : new Date(b.date);
-              const hoursPassed = (now - lastUpdated) / (1000 * 60 * 60);
-              return hoursPassed < 24; // Agar 24 ghante se kam hua hai, tabhi dikhao
-            }
-            return true; // 'Pending' wali bookings hamesha dikhao
-          });
-          
-          // List ko ulta karo taaki nayi booking sabse upar dikhe (Optional but good UX)
-=======
               const lastUpdated = b.updatedAt ? new Date(b.updatedAt) : new Date(b.date);
               const hoursPassed = (now - lastUpdated) / (1000 * 60 * 60);
               return hoursPassed < 24; 
@@ -69,7 +51,6 @@ export default function Admin() {
             return true; 
           });
           
->>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
           setBookings(activeBookings.reverse());
         }
       })
@@ -86,21 +67,14 @@ export default function Admin() {
     }
   }, [isAuthenticated]);
 
-<<<<<<< HEAD
-  // ─── 1. BOOKING ASSIGNMENT ───
-=======
   // ─── 1. BOOKING ASSIGNMENT & FAST SMS GENERATION ───
->>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
   const handleAssignDuty = async (bookingId) => {
     const staffId = assignData[bookingId];
     if (!staffId) return alert("Pehle dropdown se Staff select karo bhai!");
 
-<<<<<<< HEAD
-=======
     const selectedStaffMember = staff.find(s => s._id === staffId);
     const targetBooking = bookings.find(b => b._id === bookingId);
 
->>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
     setAssigningId(bookingId); 
     
     try {
@@ -111,14 +85,10 @@ export default function Admin() {
       });
       const data = await res.json();
       if (data.success) {
-<<<<<<< HEAD
-        alert("🔥 Duty Assigned & SMS Sent Successfully!");
-=======
         const messageBody = `ARK STUDIO Notice:\nAapka ${new Date(targetBooking.date).toDateString()} ko duty assign kiya gaya hai. Aapko jana hai.\nClient Name: ${targetBooking.name}\nClient Phone: ${targetBooking.phone}.\nKripya connect kar lein.`;
         
         console.log(`Sending SMS to ${selectedStaffMember.phone}:`, messageBody);
         alert(`🔥 Duty Assigned Successfully!\n\n💬 SMS dispatched to ${selectedStaffMember.name} (${selectedStaffMember.phone}) instantly.`);
->>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
         fetchBookings(); 
       } else {
         alert("Error: " + data.message);
@@ -130,8 +100,6 @@ export default function Admin() {
     }
   };
 
-<<<<<<< HEAD
-=======
   // ─── OWNER MANUAL BOOKING REMOVAL ───
   const handleDeleteBooking = async (bookingId) => {
     if (!window.confirm("⚠️ Kya aap sach me is booking request ko permanently delete karna chahte hain?")) return;
@@ -151,7 +119,6 @@ export default function Admin() {
     }
   };
 
->>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
   // ─── 2. STAFF MANAGEMENT ───
   const handleAddStaff = async (e) => {
     e.preventDefault();
@@ -184,15 +151,9 @@ export default function Admin() {
 
   const toggleDateSelection = (dateString) => {
     if (selectedDates.includes(dateString)) {
-<<<<<<< HEAD
-      setSelectedDates(selectedDates.filter(d => d !== dateString)); // Remove
-    } else {
-      setSelectedDates([...selectedDates, dateString]); // Add
-=======
       setSelectedDates(selectedDates.filter(d => d !== dateString)); 
     } else {
       setSelectedDates([...selectedDates, dateString]); 
->>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
     }
   };
 
@@ -208,11 +169,7 @@ export default function Admin() {
       const data = await res.json();
       if (data.success) {
         alert(`✅ ${selectedDates.length} Dates successfully marked as ${isBookedStatus ? 'BOOKED' : 'FREE'}!`);
-<<<<<<< HEAD
-        setSelectedDates([]); // Clear selection after update
-=======
         setSelectedDates([]); 
->>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
         fetchSlots(); 
       }
     } catch (error) {
@@ -243,18 +200,10 @@ export default function Admin() {
           </div>
         </div>
 
-<<<<<<< HEAD
-        {/* Days Header */}
-=======
->>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
         <div className="grid grid-cols-7 gap-2 mb-2 text-center text-[10px] font-bold tracking-widest text-zinc-500 uppercase">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => <div key={d}>{d}</div>)}
         </div>
 
-<<<<<<< HEAD
-        {/* Calendar Grid */}
-=======
->>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
         <div className="grid grid-cols-7 gap-2">
           {blanks.map((_, i) => <div key={`blank-${i}`} className="h-12 border border-transparent"></div>)}
           
@@ -282,10 +231,6 @@ export default function Admin() {
           })}
         </div>
 
-<<<<<<< HEAD
-        {/* Action Buttons */}
-=======
->>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
         <div className="mt-8 flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t border-zinc-800">
           <div className="text-xs text-zinc-400 font-mono">
             Selected Dates: <span className="text-amber-500 font-bold">{selectedDates.length}</span>
@@ -374,8 +319,6 @@ export default function Admin() {
                     <p>📅 {new Date(b.date).toDateString()}</p>
                     <p>📝 {b.notes || 'No extra notes'}</p>
                   </div>
-<<<<<<< HEAD
-=======
                   
                   {/* OWNER MANUALLY REMOVE SYSTEM TRIGGER */}
                   <div className="mt-4">
@@ -386,7 +329,6 @@ export default function Admin() {
                       🗑️ Delete Booking
                     </button>
                   </div>
->>>>>>> 83de00f61561bc676d812df9908290f2d66a8046
                 </div>
 
                 <div className="flex flex-col gap-3 w-full md:w-auto bg-black p-4 border border-zinc-900 rounded-sm">
